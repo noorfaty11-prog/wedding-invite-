@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#15131b">
+  <title>Wedding Invitation</title>
+
+  <!-- Google Fonts: handwriting (Caveat), thin serif (Cormorant Garamond), Urdu/Arabic fallbacks.
+       Without internet the page still works and falls back to system cursive/serif fonts. -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet"href="https://fonts.googleapis.com/css?family=Great+Vibes">
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Noto+Nastaliq+Urdu:wght@400;600&family=Noto+Naskh+Arabic:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- Blurred copy of the backgrounds that fills any leftover screen space around the 9:16 stage -->
+  <div id="backdrop" aria-hidden="true"></div>
+
+  <!-- Shared SVG filters (hand-drawn roughness, printed-paper grain) -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+    <defs>
+      <filter id="rough" x="-10%" y="-10%" width="120%" height="120%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="2" seed="4" result="n"/>
+        <feDisplacementMap in="SourceGraphic" in2="n" scale="5" xChannelSelector="R" yChannelSelector="G"/>
+      </filter>
+      <filter id="photoGrain" x="0" y="0" width="100%" height="100%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" seed="3" result="n"/>
+        <feColorMatrix in="n" type="matrix" values="0 0 0 0 .52  0 0 0 0 .44  0 0 0 0 .34  0 0 0 1.1 -.18"/>
+      </filter>
+    </defs>
+  </svg>
+
+  <!-- The 1080 x 1920 stage. Everything inside is built by js/app.js from js/config.js -->
+  <main id="stage" aria-live="off">
+    <div id="bgs"></div>
+    <div id="scenes"></div>
+    <div id="grain" aria-hidden="true"></div>
+    <div id="vignette" aria-hidden="true"></div>
+    <button id="hint" type="button"><span data-l="scrollDown"></span><svg viewBox="0 0 24 24" width="64" height="64" aria-hidden="true"><path d="M5 9l7 7 7-7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+  </main>
+
+  <div id="scrollwrap">
+    <div id="spacer"></div>
+    <main id="more">
+    
+      <!-- ==========================================================
+           BG5 — CELEBRATIONS + SCHEDULE
+           ========================================================== -->
+      <div class="scroll-page bg5-page">
+    
+        <!-- CELEBRATIONS -->
+        <section class="scroll-section celebration-section">
+          <div class="scroll-content">
+    
+            <p class="scroll-kicker rv" data-l="togetherWith"></p>
+    
+            <h2 class="script scroll-title rv" data-l="celebrationsBegin"></h2>
+    
+            <div class="scroll-gold-line rv"></div>
+    
+            <p class="event-date rv" data-k="dateLong"></p>
+    
+            <div class="countdown-box rv">
+              <div class="countdown" id="countdown">
+    
+                <div class="count-item">
+                  <span id="cd-days">00</span>
+                  <small data-l="days"></small>
+                </div>
+    
+                <span class="count-separator">:</span>
+    
+                <div class="count-item">
+                  <span id="cd-hours">00</span>
+                  <small data-l="hours"></small>
+                </div>
+    
+                <span class="count-separator">:</span>
+    
+                <div class="count-item">
+                  <span id="cd-minutes">00</span>
+                  <small data-l="minutes"></small>
+                </div>
+    
+                <span class="count-separator">:</span>
+    
+                <div class="count-item">
+                  <span id="cd-seconds">00</span>
+                  <small data-l="seconds"></small>
+                </div>
+    
+              </div>
+              <p class="event-date" id="cdDone" style="margin-top:12px;color:#e6c56c"></p>
+            </div>
+    
+          </div>
+        </section>
+    
+    
+        <!-- SCHEDULE -->
+        <section class="scroll-section schedule-section">
+    
+          <div class="scroll-content">
+    
+            <p class="scroll-kicker rv" data-l="joinUsFor"></p>
+    
+            <h2 class="script scroll-title rv" data-l="scheduleTitle"></h2>
+    
+            <div class="scroll-gold-line rv"></div>
+    
+            <div class="schedule-list rv" id="tl"></div>
+    
+          </div>
+    
+        </section>
+    
+      </div>
+    
+    
+      <!-- ==========================================================
+           BG6 — LOCATION
+           ========================================================== -->
+      <div class="scroll-page bg6-page">
+    
+        <section class="scroll-section location-section">
+    
+          <div class="scroll-content">
+    
+            <p class="scroll-kicker rv" data-l="celebratingAt"></p>
+    
+            <h2 class="script scroll-title rv" data-l="locationTitle"></h2>
+    
+            <div class="scroll-gold-line rv"></div>
+    
+            <div class="venue-photo rv">
+              <img
+                id="venueImg" alt="" 
+                
+                onerror="this.style.display='none'; this.parentElement.classList.add('venue-placeholder');"
+              >
+    
+              <span class="venue-placeholder-text" data-l="venueFallback"></span>
+            </div>
+    
+            <h3 class="venue-name rv" data-k="venue"></h3>
+    
+            <p class="venue-area rv" data-k="area"></p>
+    
+            <div class="map-box rv">
+              <iframe
+                id="map"
+                loading="lazy"
+                >
+              </iframe>
+            </div>
+    
+            <a
+              class="sbtn map-button rv"
+              id="mapbtn"
+              target="_blank"
+              rel="noopener" data-l="openMaps"></a>
+    
+          </div>
+    
+        </section>
+    
+      </div>
+    
+    
+      <!-- ==========================================================
+           BG2 — WELCOME + RSVP
+           ========================================================== -->
+      <div class="scroll-page bg2-page">
+    
+        <!-- WELCOME -->
+        <section class="scroll-section welcome-section">
+    
+          <div class="scroll-content welcome-content">
+    
+            <p class="scroll-kicker rv" data-l="blessings"></p>
+    
+            <p class="family-name rv" data-k="groomParents"></p>
+    
+            <span class="family-and rv" data-l="and"></span>
+    
+            <p class="family-name rv" data-k="brideParents"></p>
+    
+            <div class="scroll-gold-line rv"></div>
+    
+            <h2 class="script welcome-title rv" id="closeA"></h2>
+    
+            <p class="welcome-text rv" id="closeB"></p>
+    
+          </div>
+    
+        </section>
+    
+    
+        <!-- RSVP -->
+        <section class="scroll-section rsvp-section">
+    
+          <div class="rsvp-card">
+    
+            <p class="scroll-kicker rv" data-l="rsvpPresence"></p>
+    
+            <h2 class="script scroll-title rv" data-l="rsvpTitle"></h2>
+    
+            <div class="scroll-gold-line rv"></div>
+    
+            <p class="rsvp-note rv" data-k="rsvpNote"></p>
+    
+            <form id="form" class="rsvp-form rv">
+    
+              <input
+                id="name" name="name"
+                
+                required
+                autocomplete="name">
+    
+              <div class="attendance">
+    
+                <label>
+                  <input
+                    type="radio"
+                    name="att"
+                    value="yes"
+                    checked>
+                  <span data-l="rsvpAccept"></span>
+                </label>
+    
+                <label>
+                  <input
+                    type="radio"
+                    name="att"
+                    value="no">
+                  <span data-l="rsvpDecline"></span>
+                </label>
+    
+              </div>
+    
+              <select id="guests" name="guests" aria-label="Number of guests"></select>
+    
+              <button class="sbtn sub" type="submit" data-l="rsvpSend"></button>
+    
+              <p class="rsvp-thanks" id="thanks" hidden></p>
+    
+            </form>
+    
+          </div>
+    
+        </section>
+    
+      </div>
+    
+    </main>
+  </div>
+
+
+  <!-- Progress + controls (hidden in export mode) -->
+  <div id="bar" role="progressbar" aria-valuemin="0" aria-valuemax="100"><i></i></div>
+  <div id="ui">
+    <button id="btnPlay" type="button"></button>
+    <button id="btnReplay" type="button"></button>
+    <button id="btnMute" type="button"></button>
+  </div>
+
+  <!-- Tap-to-start overlay (browsers only allow audio after a tap) -->
+  <div id="start" role="dialog" aria-modal="true">
+    <div class="card">
+      <div class="s-eventinvite"></div>
+      <div class="s-names"></div>
+      <button id="startBtn" type="button" disabled></button>
+      <div class="s-hint"></div>
+    </div>
+  </div>
+
+  <!-- GSAP from cdnjs, then your settings, then the app -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

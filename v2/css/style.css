@@ -1,0 +1,813 @@
+/* =============================================================================
+   style.css — layout and look of the 1080 x 1920 stage.
+   The stage is always laid out at 1080x1920 and scaled to fit the screen by app.js,
+   so every pixel value below is in "stage pixels".
+   ============================================================================= */
+
+:root {
+  --hand:  'Caveat', 'Segoe Script', 'Bradley Hand', 'Comic Sans MS', cursive;
+  --serif: 'Cormorant Garamond', 'Cormorant', Georgia, 'Times New Roman', serif;
+  --urdu:  'Noto Nastaliq Urdu', 'Noto Naskh Arabic', 'Jameel Noori Nastaleeq', 'Urdu Typesetting', 'Segoe UI', serif;
+
+  /* overwritten from config.js -> theme */
+  --ink-light: #2b2230;  --ink-dark: #f6efe2;
+  --accent-light: #9a7440; --accent-dark: #e3c98f;
+  --wash-light: #c9a57a;   --wash-dark: #8fa6cc;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; background: #15131b; overflow: hidden; -webkit-text-size-adjust: 100%; }
+body { font-family: var(--serif); color: #fff; -webkit-tap-highlight-color: transparent; }
+
+/* ---------- Letterboxing ---------- */
+#backdrop { position: fixed; inset: 0; overflow: hidden; filter: blur(24px) brightness(.8); transform: scale(1.12); }
+#backdrop .bg { inset: 0; }
+
+#stage {
+  position: fixed; left: 50%; top: 50%;
+  width: 1080px; height: 1920px;
+  transform-origin: center center;
+  transform: translate(-50%, -50%) scale(.3);   /* real scale is set by app.js */
+  overflow: hidden; background: #f4eee1;
+  box-shadow: 0 30px 120px rgba(0,0,0,.5);
+}
+
+/* ---------- Backgrounds, grain, vignette ---------- */
+#bgs { position: absolute; inset: 0; }
+.bg {
+  position: absolute; inset: -5%;
+  background-size: cover; background-position: center; background-repeat: no-repeat;
+  opacity: 0; will-change: transform, opacity;
+}
+#grain {
+  position: absolute; inset: 0; pointer-events: none; opacity: .32; mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='360' height='360'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .42  0 0 0 0 .34  0 0 0 0 .26  0 0 0 .55 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+#vignette {
+  position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(ellipse at 50% 46%, rgba(0,0,0,0) 55%, rgba(40,26,14,.22) 100%);
+}
+
+/* ---------- Scenes & tone ---------- */
+#scenes, .scene { position: absolute; inset: 0; }
+.scene { opacity: 0; visibility: hidden; pointer-events: none; }
+.scene[data-tone="light"] { --ink: var(--ink-light); --ink2: color-mix(in srgb, var(--ink-light) 72%, transparent);
+  --accent: var(--accent-light); --wash: var(--wash-light); --wash-o: .34; --plate: rgba(250,246,236,.84); --btn-ink: #fff8ea; }
+.scene[data-tone="dark"]  { --ink: var(--ink-dark);  --ink2: color-mix(in srgb, var(--ink-dark) 78%, transparent);
+  --accent: var(--accent-dark); --wash: var(--wash-dark); --wash-o: .16; --plate: rgba(10,16,36,.42); --btn-ink: #1a1d33; }
+.scene { color: var(--ink); }
+
+/* Right-to-left (Urdu/Arabic) text: no letter-spacing (it would break the joined letters) */
+.rtl { direction: rtl; font-family: var(--urdu) !important; letter-spacing: 0 !important; text-transform: none !important; line-height: 1.9 !important; }
+
+/* ---------- Story scenes (groom / bride) ---------- */
+.plate {
+  position: absolute; left: 20px; right: 20px; top: 1230px; height: 640px; pointer-events: none;
+  background: radial-gradient(ellipse at center, var(--plate) 0%, rgba(0,0,0,0) 68%); filter: blur(12px);
+}
+.art-wrap { position: absolute; left: 90px; top: 140px; width: 900px; will-change: transform; }
+.art { display: block; width: 100%; height: auto; overflow: visible; }
+
+.who {
+  position: absolute; left: 90px; right: 90px; top: 1250px; text-align: center; white-space: nowrap;
+  font: 500 64px/1.2 var(--serif); letter-spacing: .4em; text-transform: uppercase; color: var(--accent);
+}
+.caps { position: absolute; left: 90px; right: 90px; top: 1320px; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.cap { width: 100%; text-align: center; white-space: pre-line; font-family: var(--hand); }
+.cap .off { visibility: hidden; }
+.cap.bold  { font-weight: 700; font-size: 84px; line-height: 1.1; }
+.cap.light { font-weight: 400; font-size: 78px;  line-height: 1.18; color: var(--ink2); }
+
+/* ---------- "meets" ---------- */
+.meets-word {
+  position: absolute; left: 0; right: 0; top: 800px; text-align: center;
+  font: 700 230px/1 var(--hand); will-change: transform, opacity;
+}
+.meets .swash { position: absolute; left: 240px; top: 1060px; width: 600px; height: 80px; overflow: visible; }
+.meets .swash path { fill: none; stroke: var(--accent); stroke-width: 6; stroke-linecap: round; }
+
+/* ---------- Save the date ---------- */
+.save .arc { position: absolute; left: 0; top: 60px; width: 1080px; height: 560px; overflow: visible; }
+.save .arc text { font: 700 104px var(--hand); fill: var(--ink); stroke: var(--ink); stroke-width: 2.2; fill-opacity: 0; letter-spacing: 8px; }
+.save .arc .swash { fill: none; stroke: var(--accent); stroke-width: 5; stroke-linecap: round; }
+.big-date {
+  position: absolute; left: 60px; right: 60px; top: 585px; text-align: center; white-space: nowrap;
+  font: 300 180px/1 var(--serif); letter-spacing: .05em; font-variant-numeric: lining-nums;
+}
+.pair { position: absolute; top: 820px; will-change: transform; }
+.pair.g { left: 10px; } .pair.b { left: 490px; }
+.pair-names { position: absolute; left: 80px; right: 80px; top: 1575px; text-align: center; font: 700 100px/1.1 var(--hand); }
+.pair-date  { position: absolute; left: 80px; right: 80px; top: 1690px; text-align: center; font: 400 44px/1.2 var(--serif); letter-spacing: .14em; color: var(--ink2); }
+
+/* ---------- Controls ---------- */
+#bar { position: fixed; left: 0; right: 0; top: 0; height: 5px; z-index: 19; background: rgba(255,255,255,.18); cursor: pointer; }
+#bar::after { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 20px; }
+#bar i { display: block; height: 100%; width: 0; background: #e3c98f; }
+#ui { position: fixed; z-index: 20; right: 10px; top: calc(12px + env(safe-area-inset-top, 0px)); display: flex; gap: 8px; }
+#ui button {
+  width: 42px; height: 42px; border: 0; border-radius: 50%; cursor: pointer; color: #fff; padding: 0;
+  background: rgba(20,18,28,.5); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+  display: grid; place-items: center; opacity: .7; transition: opacity .2s;
+}
+#ui button:hover, #ui button:focus-visible { opacity: 1; }
+#ui svg { width: 20px; height: 20px; fill: currentColor; }
+button:focus-visible, a:focus-visible { outline: 3px solid #e3c98f; outline-offset: 3px; }
+
+/* ---------- Start overlay ---------- */
+#start {
+  position: fixed; inset: 0; z-index: 30; display: grid; place-items: center; padding: 24px;
+  background: rgba(21,19,27,.55); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
+  transition: opacity .6s ease, visibility .6s;
+}
+#start.hide { opacity: 0; visibility: hidden; pointer-events: none; }
+#start .card { text-align: center; max-width: 440px; width: 100%; color: #f6efe2; }
+.s-names { font: 700 clamp(40px, 11vw, 64px)/1.05 var(--hand); margin-bottom: 26px; overflow-wrap: anywhere; }
+#startBtn {
+  font: 600 20px var(--serif); letter-spacing: .12em; text-transform: uppercase; cursor: pointer;
+  color: #1a1d33; background: #e3c98f; border: 0; border-radius: 40px; padding: 16px 40px;
+  animation: pulse 2.2s ease-in-out infinite;
+}
+#startBtn:disabled { opacity: .55; animation: none; cursor: default; }
+.s-hint { margin-top: 18px; font: 400 17px var(--serif); letter-spacing: .08em; opacity: .8; }
+@keyframes pulse { 0%,100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(227,201,143,.5); } 50% { transform: scale(1.04); box-shadow: 0 0 0 14px rgba(227,201,143,0); } }
+
+/* ---------- Export mode: stage exactly fills the 1080x1920 viewport, no UI ---------- */
+body.export #ui, body.export #bar, body.export #start, body.export #backdrop { display: none !important; }
+body.export #stage { box-shadow: none; }
+
+@media (prefers-reduced-motion: reduce) { #startBtn { animation: none; } .btn { transition: none; } }
+
+/* =============================================================================
+   Scroll-down part (sections ported from the Valima story invite)
+   ============================================================================= */
+@font-face{font-family:"Pinyon Script";src:url(../assets/fonts/PinyonScript-Regular.ttf) format("truetype");font-display:swap}
+.script{font-family:"Pinyon Script","Snell Roundhand",cursive;font-weight:400}
+#scrollwrap { position: relative; z-index: 5; width: 100%; max-width: 460px; margin: 0 auto; visibility: hidden; font-family: "Cormorant Garamond", Georgia, serif; font-size: 19px; line-height: 1.5; color: #e9eefb; text-align: center; }
+#scrollwrap p { margin: .3rem auto; }
+#scrollwrap *, #scrollwrap *::before { box-sizing: border-box; }
+#spacer { height: 100svh; pointer-events: none; }
+#scrollwrap { pointer-events: none; }
+#more { pointer-events: auto; }
+html:has(body.scrolling), body.scrolling { overflow-y: auto; height: auto; min-height: 100%; }
+.sbtn{display:inline-block;padding:.65rem 1.7rem;border-radius:999px;border:1px solid #e9eefb;background:transparent;color:#e9eefb;font:italic 1.1rem "Cormorant Garamond",serif;text-decoration:none;cursor:pointer}
+.sbtn:hover,.sbtn:focus-visible{background:#e9eefb;color:#0d1730}
+#more { box-shadow: 0 0 60px rgba(0,0,0,.45); }
+.schedule-section .scroll-content { transform: translateY(-50px); }
+
+/* "Scroll down" hint at the end of the story */
+#hint { position: absolute; left: 0; right: 0; bottom: 70px; margin: 0 auto; width: 520px; opacity: 0; pointer-events: none; z-index: 8; border: 0; background: none; color: var(--accent-dark); font: 500 44px/1 var(--serif); letter-spacing: .3em; text-transform: uppercase; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+#hint.live { pointer-events: auto; cursor: pointer; }
+#hint svg { animation: nudge 1.6s ease-in-out infinite; }
+@keyframes nudge { 0%,100% { transform: translateY(0); } 50% { transform: translateY(18px); } }
+
+/* ---- scroll pages: backgrounds 5, 6, 2 ---- */
+/* ============================================================
+   SCROLL PAGES — DIFFERENT BACKGROUND FOR EACH PART
+   ============================================================ */
+
+#more { width: 100%; }
+
+
+/* Each background page */
+
+.scroll-page {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+
+  background-position: center top;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+
+/* BG5 — celebrations + schedule */
+
+.bg5-page {
+  background-image: url("../assets/backgrounds/scroll-celebrations.jpg");
+}
+
+
+/* BG6 — location */
+
+.bg6-page {
+  background-image: url("../assets/backgrounds/scroll-location.jpg");
+}
+
+
+/* BG2 — welcome + RSVP */
+
+.bg2-page {
+  background-image: url("../assets/backgrounds/scroll-welcome.jpg");
+}
+
+
+/* ------------------------------------------------------------
+   Individual sections
+   ------------------------------------------------------------ */
+
+.scroll-section {
+  position: relative;
+
+  width: 100%;
+  min-height: 100svh;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 80px 24px;
+}
+
+
+.scroll-content {
+  width: 100%;
+  max-width: 380px;
+
+  margin: auto;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  text-align: center;
+}
+
+
+/* ------------------------------------------------------------
+   Headings
+   ------------------------------------------------------------ */
+
+.scroll-kicker {
+  margin: 0 0 8px;
+
+  font-size: 13px;
+  letter-spacing: .25em;
+  text-transform: uppercase;
+
+  color: #e6c56c;
+}
+
+
+.scroll-title {
+  margin: 0;
+
+  font-size: 48px;
+  line-height: 1.05;
+  font-weight: 400;
+
+  color: #FFD700;
+}
+
+
+.scroll-gold-line {
+  width: 65px;
+  height: 1px;
+
+  background: #b8955a;
+
+  margin: 18px auto 22px;
+}
+
+
+.event-date {
+  margin: 0;
+
+  font-size: 18px;
+
+  color: #e8f1f1;
+}
+
+
+/* ============================================================
+   COUNTDOWN
+   ============================================================ */
+
+.countdown-box {
+  width: 100%;
+
+  margin-top: 35px;
+
+  padding: 20px 10px;
+
+  border-top: 1px solid rgba(184,149,90,.45);
+  border-bottom: 1px solid rgba(184,149,90,.45);
+}
+
+
+.countdown {
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  gap: 5px;
+}
+
+
+.count-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  min-width: 58px;
+}
+
+
+.count-item span {
+  font-family:
+    "Cormorant Garamond",
+    Georgia,
+    serif;
+
+  font-size: 30px;
+  line-height: 1;
+
+  font-weight: 600;
+
+  color: #d8e0f3;
+}
+
+
+.count-item small {
+  margin-top: 5px;
+
+  font-size: 10px;
+
+  letter-spacing: .12em;
+  text-transform: uppercase;
+
+  color: #9eaabe;
+}
+
+
+.count-separator {
+  align-self: flex-start;
+
+  margin-top: 2px;
+
+  font-size: 26px;
+
+  color: #b8955a;
+}
+
+
+/* ============================================================
+   SCHEDULE
+   ============================================================ */
+
+.schedule-section {
+  min-height: 80svh;
+}
+
+
+.schedule-list {
+  width: 100%;
+  max-width: 330px;
+
+  margin-top: 10px;
+
+  border-top:
+    1px solid rgba(79,111,163,.35);
+}
+
+
+.schedule-item {
+  display: flex;
+
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 20px;
+
+  padding: 18px 5px;
+
+  border-bottom:
+    1px solid rgba(79,111,163,.35);
+}
+
+
+.schedule-time {
+  font-size: 30px;
+
+  font-weight: 600;
+
+  color: #e3e635;
+}
+
+
+.schedule-label {
+  font-size: 25px;
+
+  font-style: italic;
+
+  color: #f0f336;
+}
+
+
+/* ============================================================
+   LOCATION
+   ============================================================ */
+
+.location-section {
+  min-height: 100svh;
+
+  padding-top: 90px;
+  padding-bottom: 90px;
+}
+
+
+.venue-photo {
+  position: relative;
+
+  width: 100%;
+  max-width: 330px;
+
+  height: 205px;
+
+  margin: 5px auto 20px;
+
+  overflow: hidden;
+
+  border-radius: 18px;
+
+  background: rgba(255,255,255,.55);
+
+  border:
+    1px solid rgba(184,149,90,.55);
+
+  box-shadow:
+    0 12px 35px rgba(35,45,70,.15);
+}
+
+
+.venue-photo img {
+  display: block;
+
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+}
+
+
+.venue-placeholder-text {
+  position: absolute;
+
+  inset: 0;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  font-family:
+    "Pinyon Script",
+    cursive;
+
+  font-size: 40px;
+
+  color: #8f7953;
+}
+
+
+.venue-photo:not(.venue-placeholder)
+.venue-placeholder-text {
+  display: none;
+}
+
+
+.venue-name {
+  margin: 0;
+
+  font-family:
+    "Cormorant Garamond",
+    Georgia,
+    serif;
+
+  font-size: 34px;
+
+  font-weight: 500;
+
+  color: #be4413;
+}
+
+
+.venue-area {
+  margin: 2px 0 18px;
+
+  font-size: 18px;
+
+  color: #151c55;
+}
+
+
+.map-box {
+  width: 100%;
+  max-width: 330px;
+
+  height: 190px;
+
+  margin: 8px auto 15px;
+
+  overflow: hidden;
+
+  border-radius: 16px;
+
+  border:
+    1px solid rgba(79,111,163,.45);
+
+  box-shadow:
+    0 10px 28px rgba(35,45,70,.15);
+}
+
+
+.map-box iframe {
+  width: 100%;
+  height: 100%;
+
+  border: 0;
+}
+
+
+.map-button {
+  color: #26304a;
+
+  border-color: #d4c707;
+}
+
+
+/* ============================================================
+   WELCOME
+   ============================================================ */
+
+.welcome-section {
+  min-height: 90svh;
+}
+
+
+.welcome-content {
+  max-width: 350px;
+}
+
+
+.family-name {
+  margin: 8px auto;
+
+  font-size: 23px;
+
+  line-height: 1.4;
+
+  color: #11110f;
+}
+
+
+.family-and {
+  display: block;
+
+  margin: 8px 0;
+
+  font-family:
+    "Pinyon Script",
+    cursive;
+
+  font-size: 30px;
+
+  color: #b8955a;
+}
+
+
+.welcome-title {
+  margin: 5px 0 0;
+
+  font-size: 50px;
+
+  line-height: 1.05;
+
+  color: #26304a;
+}
+
+
+.welcome-text {
+  margin-top: -2px;
+
+  font-size: 18px;
+
+  font-style: italic;
+
+  color: #697995;
+}
+
+
+/* ============================================================
+   RSVP
+   ============================================================ */
+
+.rsvp-section {
+  min-height: 100svh;
+
+  padding: 70px 20px;
+}
+
+
+.rsvp-card {
+  width: 100%;
+  max-width: 360px;
+
+  padding: 40px 25px;
+
+  background: rgba(255,255,255,.78);
+
+  border:
+    1px solid rgba(184,149,90,.55);
+
+  border-radius: 20px;
+
+  box-shadow:
+    0 15px 45px rgba(30,40,65,.18);
+
+  backdrop-filter: blur(5px);
+}
+
+
+.rsvp-note {
+  margin: 0 0 15px;
+
+  font-size: 17px;
+
+  color: #697995;
+}
+
+
+.rsvp-form {
+  width: 100%;
+
+  margin-top: 10px;
+
+  text-align: left;
+}
+
+
+.rsvp-form input:not([type="radio"]),
+.rsvp-form select {
+  display: block;
+
+  width: 100%;
+
+  margin: 10px 0;
+
+  padding: 12px 13px;
+
+  border:
+    1px solid rgba(79,111,163,.45);
+
+  border-radius: 10px;
+
+  background: rgba(255,255,255,.9);
+
+  font:
+    16px "Cormorant Garamond",
+    Georgia,
+    serif;
+
+  color: #26304a;
+}
+
+
+.attendance {
+  margin: 12px 0;
+}
+
+
+.attendance label {
+  display: flex;
+
+  align-items: center;
+
+  gap: 8px;
+
+  margin: 8px 0;
+
+  font-size: 16px;
+
+  color: #4f5d75;
+}
+
+
+.attendance input[type="radio"] {
+  accent-color: #4f6fa3;
+}
+
+
+.rsvp-form .sub {
+  width: 100%;
+
+  margin-top: 12px;
+
+  background: #26304a;
+
+  color: white;
+
+  border-color: #26304a;
+}
+
+
+.rsvp-thanks {
+  margin-top: 15px;
+
+  text-align: center;
+
+  font-style: italic;
+
+  color: #4f6fa3;
+}
+
+
+/* ============================================================
+   SCROLL REVEAL
+   ============================================================ */
+
+.rv {
+  opacity: 0;
+
+  transform: translateY(22px);
+
+  transition:
+    opacity .4s ease,
+    transform .4s ease;
+}
+
+
+.rv.in {
+  opacity: 1;
+
+  transform: translateY(0);
+}
+
+
+/* ============================================================
+   SMALL SCREENS
+   ============================================================ */
+
+@media (max-width: 380px) {
+
+  .scroll-title,
+  .welcome-title {
+    font-size: 42px;
+  }
+
+  .count-item {
+    min-width: 50px;
+  }
+
+  .count-item span {
+    font-size: 26px;
+  }
+
+  .count-separator {
+    font-size: 23px;
+  }
+
+  .rsvp-card {
+    padding: 35px 20px;
+  }
+
+}
+#mute{position:fixed;right:14px;bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:40;width:44px;height:44px;border-radius:50%;border:1px solid rgba(233,238,251,.7);background:rgba(10,18,40,.78);color:#e9eefb;font-size:12px;cursor:pointer;display:none}
+#skip{position:fixed;top:calc(12px + env(safe-area-inset-top,0px));right:14px;z-index:40;border:0;background:rgba(10,18,40,.6);color:#e9eefb;border-radius:99px;padding:4px 14px;font:italic 1rem "Cormorant Garamond",serif;cursor:pointer;display:none}
+@media (prefers-reduced-motion:reduce){*{transition-duration:.01s!important;animation:none!important}}
+
+#start {
+  z-index: 20;
+}
+
+#start.gone {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 1.3s ease, visibility 0s 1.3s;
+}
+
+
+body.export #scrollwrap, body.export #hint { display: none; }
+.s-eventinvite {
+  font-family: "Pinyon Script", "Snell Roundhand", cursive;  /* change font here */
+  font-size: clamp(30px, 8vw, 46px);
+  color: #0d0229;
+  margin-bottom: 14px;
+  line-height: 1.2;
+}
+.s-names {
+  font-family: "Great Vibes", cursive;
+  font-weight: 400;
+  color: #131801;
+}
+@media (max-width: 800px) {
+  #backdrop { display: none; }
+  #grain { display: none; }
+  #start {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    background: rgba(21,19,27,.8);
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "name": "wedding-invite-video",
+  "version": "1.0.0",
+  "description": "Animated illustrated wedding invitation (9:16) with MP4 export",
+  "private": true,
+  "engines": { "node": ">=18" },
+  "scripts": {
+    "start": "node scripts/static-server.js",
+    "export": "node scripts/export-video.js"
+  },
+  "dependencies": {
+    "puppeteer": "^24.0.0"
+  }
+}
